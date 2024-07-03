@@ -6,3 +6,6 @@ node_modules/
 
 # PhpStorm
 .idea
+
+# Self-signed certificate
+certs/
