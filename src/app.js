@@ -5,6 +5,7 @@ import open from 'open';
 import dotenv from 'dotenv';
 import { authenticateSpotify } from './auth/spotify/auth.js';
 import deezerAuthRouter from './auth/deezer/auth.js';
+import appleMusicAuthRouter from './auth/apple-music/auth.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ const options = {
 
 app.get('/callback', authenticateSpotify);
 app.use('/deezer', deezerAuthRouter);
+app.use('/applemusic', appleMusicAuthRouter);
 
 const authorizeURL = `https://accounts.spotify.com/authorize?client_id=${process.env.SPOTIFY_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(process.env.SPOTIFY_REDIRECT_URI)}&scope=playlist-modify-public%20playlist-modify-private`;
 
