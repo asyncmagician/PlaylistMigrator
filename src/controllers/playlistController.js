@@ -1,9 +1,9 @@
 import { fetchYouTubePlaylistItems, fetchYouTubePlaylistDetails } from '../services/youtubeService.js';
-import { getSpotifyUser, createSpotifyPlaylist, searchTrackOnSpotify } from '../services/spotifyService.js';
 import { getDeezerPlaylistDetails, getDeezerPlaylistTracks } from '../services/deezerService.js';
+import { createAppleMusicPlaylist, searchTrackOnAppleMusic } from '../services/appleMusicService.js';
 import { logError, logInfo } from '../utils/logger.js';
 
-export async function main(accessToken, service) {
+export async function main(service, userToken) {
     try {
         let tracks = [];
         let playlistName = '';
@@ -18,20 +18,19 @@ export async function main(accessToken, service) {
             tracks = await fetchYouTubePlaylistItems(process.env.YOUTUBE_PLAYLIST_ID, process.env.YOUTUBE_API_KEY);
         }
 
-        const spotifyTracks = [];
+        const appleMusicTracks = [];
         for (const track of tracks) {
-            const spotifyTrackUri = await searchTrackOnSpotify(accessToken, track);
-            if (spotifyTrackUri) {
-                spotifyTracks.push(spotifyTrackUri);
+            const appleMusicTrackId = await searchTrackOnAppleMusic(userToken, track);
+            if (appleMusicTrackId) {
+                appleMusicTracks.push(appleMusicTrackId);
             }
         }
 
-        if (spotifyTracks.length > 0) {
-            const user = await getSpotifyUser(accessToken);
-            await createSpotifyPlaylist(accessToken, user.id, spotifyTracks, playlistName);
-            logInfo('Playlist created successfully on Spotify!');
+        if (appleMusicTracks.length > 0) {
+            await createAppleMusicPlaylist(userToken, playlistName, appleMusicTracks);
+            logInfo('Playlist created successfully on Apple Music!');
         } else {
-            logInfo('No tracks found on Spotify.');
+            logInfo('No tracks found on Apple Music.');
         }
     } catch (error) {
         logError('Error:', error);
